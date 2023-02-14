@@ -1,10 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:my_app/bloc/login/login_account_bloc.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({super.key});
+  final String verificationId;
+  const OtpScreen({Key? key, required this.verificationId}) : super(key: key);
   static const id = "otp_screen";
 
   @override
@@ -67,10 +70,18 @@ class _OtpScreenState extends State<OtpScreen> {
             height: 60.h,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                  onPressed: () =>
-                      Navigator.of(context).pushNamed(OtpScreen.id),
-                  child: const Text("Gửi OTP")),
+              child: BlocBuilder<LoginAccountBloc, LoginAccountState>(
+                builder: (context, state) {
+                  return ElevatedButton(
+                      onPressed: () => {
+                            context.read<LoginAccountBloc>().add(
+                                VerifySendOtpEvent(
+                                    verificationId: widget.verificationId,
+                                    otpCode: smsCodeCtrl.text))
+                          },
+                      child: const Text("Gửi OTP"));
+                },
+              ),
             ),
           ))
         ],
@@ -128,6 +139,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 onChanged: (value) {
                   setState(() {
                     _smsCode = value;
+                    smsCodeCtrl.text = value;
                   });
                 }, // provider.setSmsCode,
                 cursorColor: Colors.transparent,

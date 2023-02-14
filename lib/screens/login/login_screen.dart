@@ -70,14 +70,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     context
                         .read<LoginAccountBloc>()
                         .add(SendOtpToPhoneEvent(phone: phoneController.text));
-                    Navigator.of(context).pushNamed(OtpScreen.id);
+                    // Navigator.of(context).pushNamed(OtpScreen.id);
                   },
                   child: BlocConsumer<LoginAccountBloc, LoginAccountState>(
                     listener: (context, state) {
                       if (state is LoginAccountLoadedState) {
                         Navigator.of(context).pushNamed(DashBoardScreen.id);
                       } else if (state is PhoneAuthCodeSentSuccessState) {
-                        Navigator.of(context).pushNamed(OtpScreen.id);
+                        Navigator.of(context).pushNamed(OtpScreen.id,
+                            arguments: {
+                              "verificationId": state.verificationId
+                            });
                       } else if (state is LoginAccountErrorState) {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(SnackBar(content: Text(state.error)));
